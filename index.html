@@ -866,7 +866,7 @@ report bugs, or submit feature ideas for this Quick Start.
 </div>
 <div class="paragraph">
 <p>This Quick Start deploys an AEM OpenCloud architecture on the AWS Cloud with high availability features including <a href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html" target="_blank" rel="noopener">Amazon EC2 Auto Scaling</a>,
-<a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/introduction.html" target="_blank" rel="noopener">Elastic Load Balancing</a> &amp; <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html" target="_blank" rel="noopener">Amazon CloudFront</a>.</p>
+<a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html" target="_blank" rel="noopener">Elastic Load Balancing</a> &amp; <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html" target="_blank" rel="noopener">Amazon CloudFront</a>.</p>
 </div>
 <div class="paragraph">
 <p>The AEM OpenCloud Full-Set is deployed with the recommended highly-available configuration of two Author-Dispatcher, two Publish-Dispatcher and two AEM Publish instances across multiple availability zones in one AWS Region. Further Amazon Cloudwatch alarms are configured to monitor the average CPU utilization of the Publish-Dispatcher Auto Scaling group. The alarm is configured to scale out/in by one EC2 instance if the CPU Utilization is above/below 50%, by not exceeding the configured minimum (2) or maximum (4) size of the Publish-Dispatcher Auto Scaling Group. The Orchestrator application manages AEM replication and flush agents as instances are  created and terminated.</p>
@@ -1000,7 +1000,7 @@ internet access for resources in the private subnets.*</p>
 Shell (SSH) access to EC2 instances in public and private subnets.*</p>
 </li>
 <li>
-<p>An internet-facing Classic Load Balancer (ELB) for routing traffic to the content delivery web server.</p>
+<p>An internet-facing Application Load Balancer (ALB) for routing traffic to the content delivery web server.</p>
 </li>
 </ul>
 </div>
@@ -1025,10 +1025,10 @@ Shell (SSH) access to EC2 instances in public and private subnets.*</p>
 <p>Utility EC2 instances are deployed into their own Auto Scaling group.</p>
 </li>
 <li>
-<p>An internal ELB for routing traffic to the active content management server.</p>
+<p>An internal ALB for routing traffic to the active content management server.</p>
 </li>
 <li>
-<p>An internal ELB for routing traffic to the content management web server.</p>
+<p>An internal ALB for routing traffic to the content management web server.</p>
 </li>
 </ul>
 </div>
@@ -1104,7 +1104,7 @@ configuration.</p>
 <div class="sect3">
 <h4 id="_resource_quotas">Resource quotas</h4>
 <div class="paragraph">
-<p>If necessary, request <a href="https://console.aws.amazon.com/servicequotas/home?region=us-east-2#!/" target="_blank" rel="noopener">service quota increases</a> for the following resources. You might need to request increases if your existing deployment currently uses these resources and if this Quick Start deployment could result in exceeding the default quotas. The <a href="https://console.aws.amazon.com/servicequotas/home?region=us-east-2#!/" target="_blank" rel="noopener">Service Quotas console</a> displays your usage and quotas for some aspects of some services. For more information, see <a href="https://docs.aws.amazon.com/servicequotas/latest/userguide/intro.html" target="_blank" rel="noopener">What is Service Quotas?</a> and <a href="https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html" target="_blank" rel="noopener">AWS service quotas</a>.</p>
+<p>If necessary, request <a href="https://console.aws.amazon.com/servicequotas/home?region=us-east-2#!/" target="_blank" rel="noopener">service quota increases</a> for the following resources. You might request quota increases to avoid exceeding the default limits for any resources that are shared across multiple deployments. The <a href="https://console.aws.amazon.com/servicequotas/home?region=us-east-2#!/" target="_blank" rel="noopener">Service Quotas console</a> displays your usage and quotas for some aspects of some services. For more information, see <a href="https://docs.aws.amazon.com/servicequotas/latest/userguide/intro.html" target="_blank" rel="noopener">What is Service Quotas?</a> and <a href="https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html" target="_blank" rel="noopener">AWS service quotas</a>.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1139,7 +1139,7 @@ configuration.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Classic Load Balancers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Application Load Balancers</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
 </tr>
 <tr>
@@ -1407,9 +1407,6 @@ in the Region <code>us-east-1</code>. This certificate must be created as a wild
 <h3 id="_operating_system_for_deployment">Operating System for Deployment</h3>
 <div class="paragraph">
 <p>This Quick Start supports Amazon Linux 2(AL2) or RedHat Enterprise Linux 7(RHEL7) for your AEM OpenCloud installation on AWS. This Quick Start deployment uses AL2.</p>
-</div>
-<div class="paragraph">
-<p>Please note that NVME instance types e.g. <code>m5</code> or <code>t3</code> are <strong>not supported</strong> when you run AEM OpenCloud on <strong>RHEL7</strong>.</p>
 </div>
 </div>
 </div>
@@ -2378,59 +2375,8 @@ When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, 
 <p><strong>Q.</strong> Which versions of Oracle Java JDK8 are supported by AEM OpenCloud?</p>
 </div>
 <div class="paragraph">
-<p><strong>A.</strong> Supported versions of Oracle Java JDK 8 and their allowed input value for the parameter <code>JavaJDKVersion</code> are listed in the table below.</p>
+<p><strong>A.</strong> All versions of Oracle Java JDK8 are supported. You just need to provide the version e.g. <code>8u271</code> as input value for the parameter <code>JavaJDKVersion</code></p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 16. Supported Java JDK8 Versions</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Version</th>
-<th class="tableblock halign-left valign-top">Allowed input value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Java JDK 8u171</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8u171</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Java JDK 8u181</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8u181</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Java JDK 8u191</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8u191</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Java JDK 8u201</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8u201</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Java JDK 8u211</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8u211</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Java JDK 8u221</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8u221</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Java JDK 8u231</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8u231</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Java JDK 8u241</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8u241</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Java JDK 8u251</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8u251</p></td>
-</tr>
-</tbody>
-</table>
 <div class="paragraph">
 <p><strong>Q.</strong> What versions of AEM are supported by AEM OpenCloud?</p>
 </div>
@@ -2438,7 +2384,7 @@ When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, 
 <p><strong>A.</strong> Supported versions of AEM and their allowed input value for the parameter <code>AemVersion</code> including the expected name of the Service-Packs are listed in the table below.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 17. Supported AEM Version</caption>
+<caption class="title">Table 16. Supported AEM Version</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -2546,6 +2492,16 @@ When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, 
 <td class="tableblock halign-left valign-top"><p class="tableblock">AEM 65 SP4</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">65-SP4</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">AEM-6.5.4.0-6.5.4.zip</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AEM 65 SP5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">65-SP5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AEM-6.5.4.0-6.5.5.zip</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AEM 65 SP6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">65-SP6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AEM-6.5.4.0-6.5.6.zip</p></td>
 </tr>
 </tbody>
 </table>
