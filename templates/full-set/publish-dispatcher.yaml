@@ -106,8 +106,6 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
   CriticalPublishDispatcherAVGCPUHighAlarm:
     Properties:
-      AlarmName:
-        Fn::Sub: ${AOCStackPrefix}-Critical-PublishDispatcher-AVGCPUHighAlarm
       AlarmActions:
         - Ref: PublishDispatcherScaleUpPolicy
         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/messaging/criticalalarmnotificationtopic:1}}"
@@ -127,8 +125,6 @@ Resources:
     Type: AWS::CloudWatch::Alarm
   WarningPublishDispatcherAVGCPULowAlarm:
     Properties:
-      AlarmName:
-        Fn::Sub: ${AOCStackPrefix}-Warning-PublishDispatcher-AVGCPULowAlarm
       AlarmActions:
       - Ref: PublishDispatcherScaleDownPolicy
       AlarmDescription: Scale down if CPU Avg < X % for X minutes
@@ -151,8 +147,6 @@ Resources:
       AlarmActions:
         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/messaging/warningalarmnotificationtopic:1}}"
       AlarmDescription: At least one Publish Dispatcher is Unhealthy
-      AlarmName:
-        Fn::Sub: ${AOCStackPrefix}-Warning-PublishDispatcher-AtLeastOneUnHealthyAlarm
       ComparisonOperator: GreaterThanOrEqualToThreshold
       Dimensions:
       - Name: LoadBalancerName
@@ -173,8 +167,6 @@ Resources:
       AlarmActions:
         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/messaging/criticalalarmnotificationtopic:1}}"
       AlarmDescription: More than one Publish Dispatcher is Unhealthy
-      AlarmName:
-        Fn::Sub: ${AOCStackPrefix}-Critical-PublishDispatcher-MoreThanOneUnHealthyAlarm
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
       - Name: LoadBalancerName
@@ -234,6 +226,15 @@ Resources:
     Type: AWS::AutoScaling::LaunchConfiguration
   PublishDispatcherLoadBalancer:
     Properties:
+      LoadBalancerAttributes:
+        - Key: "access_logs.s3.enabled"
+          Value: "true"
+        - Key: "access_logs.s3.bucket"
+          Value:
+            Fn::Sub: "{{resolve:ssm:/${AOCStackPrefix}/config/s3databucketname:1}}"
+        - Key: "access_logs.s3.prefix"
+          Value:
+            Fn::Sub: "${AOCStackPrefix}/logs/elb/publish-dispatcher/"
       Type: application
       Scheme:
         Ref: PublishDispatcherLoadBalancerSchemeParameter
@@ -308,11 +309,6 @@ Resources:
       AlarmActions:
         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/messaging/warningalarmnotificationtopic:1}}"
       AlarmDescription: Memory Utilization is high
-      AlarmName:
-        Fn::Sub:
-          - "${AOCStackPrefix}-Warning-PublishDispatcher-MemoryHighAlarm"
-          - AOCStackPrefix:
-              Ref: 'AOCStackPrefix'
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
       - Name: AutoScalingGroupName
@@ -333,11 +329,6 @@ Resources:
       AlarmActions:
         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/messaging/criticalalarmnotificationtopic:1}}"
       AlarmDescription: Memory Utilization is high
-      AlarmName:
-        Fn::Sub:
-          - "${AOCStackPrefix}-Critical-PublishDispatcher-MemoryHighAlarm"
-          - AOCStackPrefix:
-              Ref: 'AOCStackPrefix'
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
         - Name: AutoScalingGroupName
@@ -358,11 +349,6 @@ Resources:
       AlarmActions:
         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/messaging/warningalarmnotificationtopic:1}}"
       AlarmDescription: Disk Space Utilization is high
-      AlarmName:
-        Fn::Sub:
-          - "${AOCStackPrefix}-Warning-PublishDispatcher-RootDiskSpaceHighAlarm"
-          - AOCStackPrefix:
-              Ref: 'AOCStackPrefix'
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
         - Name: AutoScalingGroupName
@@ -387,11 +373,6 @@ Resources:
       AlarmActions:
         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/messaging/criticalalarmnotificationtopic:1}}"
       AlarmDescription: Disk Space Utilization is high
-      AlarmName:
-        Fn::Sub:
-          - "${AOCStackPrefix}-Critical-PublishDispatcher-RootDiskSpaceHighAlarm"
-          - AOCStackPrefix:
-              Ref: 'AOCStackPrefix'
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
         - Name: AutoScalingGroupName
@@ -416,11 +397,6 @@ Resources:
       AlarmActions:
         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/messaging/warningalarmnotificationtopic:1}}"
       AlarmDescription: Disk Space Utilization is high
-      AlarmName:
-        Fn::Sub:
-          - "${AOCStackPrefix}-Warning-PublishDispatcher-DataDiskSpaceHighAlarm"
-          - AOCStackPrefix:
-              Ref: 'AOCStackPrefix'
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
         - Name: AutoScalingGroupName
@@ -445,11 +421,6 @@ Resources:
       AlarmActions:
         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/messaging/criticalalarmnotificationtopic:1}}"
       AlarmDescription: Disk Space Utilization is high
-      AlarmName:
-        Fn::Sub:
-          - "${AOCStackPrefix}-Critical-PublishDispatcher-DataDiskSpaceHighAlarm"
-          - AOCStackPrefix:
-              Ref: 'AOCStackPrefix'
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
         - Name: AutoScalingGroupName
@@ -474,11 +445,6 @@ Resources:
       AlarmActions:
         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/messaging/warningalarmnotificationtopic:1}}"
       AlarmDescription: CPU Utilization is high
-      AlarmName:
-        Fn::Sub:
-          - "${AOCStackPrefix}-Warning-PublishDispatcher-CPUHighAlarm"
-          - AOCStackPrefix:
-              Ref: 'AOCStackPrefix'
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
         - Name: AutoScalingGroupName
@@ -499,11 +465,6 @@ Resources:
       AlarmActions:
         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/messaging/criticalalarmnotificationtopic:1}}"
       AlarmDescription: CPU Utilization is high
-      AlarmName:
-        Fn::Sub:
-          - "${AOCStackPrefix}-Critical-PublishDispatcher-CPUHighAlarm"
-          - AOCStackPrefix:
-              Ref: 'AOCStackPrefix'
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
         - Name: AutoScalingGroupName
