@@ -154,20 +154,30 @@ Conditions:
 Resources:
   AmiCreationSecurityGroup:
     Type: AWS::EC2::SecurityGroup
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+        - id: W5
+          reason: "Skip egress cidr rule check"
+        - id: W9
+          reason: "Skip ingress cidr rule check"
     Properties:
       GroupDescription: App Server Security Group (AWS Quick Start)
       VpcId: !Sub '{{resolve:ssm:/${AOCStackPrefix}/network/vpcid:1}}'
       SecurityGroupIngress:
-      - IpProtocol: tcp
+      - Description: Allow incoming SSH connections.
+        IpProtocol: tcp
         FromPort: 22
         ToPort: 22
         CidrIp: !Sub '{{resolve:ssm:/${AOCStackPrefix}/network/vpccidr:1}}'
       SecurityGroupEgress:
-      - IpProtocol: tcp
+      - Description: Allow Outgoing HTTP connections for installation
+        IpProtocol: tcp
         FromPort: 80
         ToPort: 80
         CidrIp: 0.0.0.0/0
-      - IpProtocol: tcp
+      - Description: Allow Outgoing HTTPS connections for installation
+        IpProtocol: tcp
         FromPort: 443
         ToPort: 443
         CidrIp: 0.0.0.0/0
@@ -183,36 +193,29 @@ Resources:
           Action:
           - sts:AssumeRole
       Path: /
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/CloudWatchAgentServerPolicy
       Policies:
         - PolicyName: aoc-ami-creation
           PolicyDocument:
             Statement:
               - Effect: Allow
                 Action:
-                  - iam:PassRole
-                Resource: '*'
-              - Effect: Allow
-                Action:
-                  - s3:GetObject*
+                  - s3:GetObject
                 Resource:
-                  - !Sub "arn:aws:s3:::${QSS3BucketName}/${QSS3KeyPrefix}*"
+                  - !Sub "arn:${AWS::Partition}:s3:::${QSS3BucketName}/${QSS3KeyPrefix}*"
                   - !Join
                       - ""
-                      - - "arn:aws:s3:::"
+                      - - !Sub "arn:${AWS::Partition}:s3:::"
                         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/config/s3installationbucketname:1}}"
                         - "/"
                         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/config/s3installationkeyprefix:1}}"
                         - "*"
                   - !Join
                       - ""
-                      - - "arn:aws:s3:::"
+                      - - !Sub "arn:${AWS::Partition}:s3:::"
                         - !Sub "{{resolve:ssm:/${AOCStackPrefix}/config/s3databucketname:1}}"
                         - !Sub "/${AOCStackPrefix}/*"
-              - Effect: Allow
-                Action:
-                  - 'logs:*'
-                Resource:
-                  - 'arn:aws:logs:*:*:*'
               - Effect: Allow
                 Action:
                   - ssm:GetParametersByPath
@@ -283,21 +286,6 @@ Resources:
               yum-utils: []
               sudo: []
           files:
-            /etc/cfn/cfn-hup.conf:
-              content: !Sub |
-                [main]
-                stack=${AWS::StackId}
-                region=${AWS::Region}
-              mode: '000400'
-              owner: root
-              group: root
-            /etc/cfn/hooks.d/cfn-auto-reloader.conf:
-              content: !Sub |
-                [cfn-auto-reloader-hook]
-                triggers=post.update
-                path=Resources.LaunchConfig.Metadata.AWS::CloudFormation::Init
-                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchConfig --region ${AWS::Region}
-                runas=root
             /tmp/shinesolutions/install_aem_opencloud.sh:
               source:
                 !Sub
@@ -328,14 +316,6 @@ Resources:
               owner: root
               group: root
               authentication: S3AccessCreds
-          services:
-            sysvinit:
-              cfn-hup:
-                enabled: 'true'
-                ensureRunning: 'true'
-                files:
-                - /etc/cfn/cfn-hup.conf
-                - /etc/cfn/hooks.d/cfn-auto-reloader.conf
     Properties:
       BlockDeviceMappings:
       - DeviceName: '/dev/xvda'
@@ -411,21 +391,6 @@ Resources:
               yum-utils: []
               sudo: []
           files:
-            /etc/cfn/cfn-hup.conf:
-              content: !Sub |
-                [main]
-                stack=${AWS::StackId}
-                region=${AWS::Region}
-              mode: '000400'
-              owner: root
-              group: root
-            /etc/cfn/hooks.d/cfn-auto-reloader.conf:
-              content: !Sub |
-                [cfn-auto-reloader-hook]
-                triggers=post.update
-                path=Resources.LaunchConfig.Metadata.AWS::CloudFormation::Init
-                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchConfig --region ${AWS::Region}
-                runas=root
             /tmp/shinesolutions/install_aem_opencloud.sh:
               source:
                 !Sub
@@ -456,14 +421,6 @@ Resources:
               owner: root
               group: root
               authentication: S3AccessCreds
-          services:
-            sysvinit:
-              cfn-hup:
-                enabled: 'true'
-                ensureRunning: 'true'
-                files:
-                - /etc/cfn/cfn-hup.conf
-                - /etc/cfn/hooks.d/cfn-auto-reloader.conf
     Properties:
       BlockDeviceMappings:
       - DeviceName: '/dev/xvda'
@@ -539,21 +496,6 @@ Resources:
               yum-utils: []
               sudo: []
           files:
-            /etc/cfn/cfn-hup.conf:
-              content: !Sub |
-                [main]
-                stack=${AWS::StackId}
-                region=${AWS::Region}
-              mode: '000400'
-              owner: root
-              group: root
-            /etc/cfn/hooks.d/cfn-auto-reloader.conf:
-              content: !Sub |
-                [cfn-auto-reloader-hook]
-                triggers=post.update
-                path=Resources.LaunchConfig.Metadata.AWS::CloudFormation::Init
-                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchConfig --region ${AWS::Region}
-                runas=root
             /tmp/shinesolutions/install_aem_opencloud.sh:
               source:
                 !Sub
@@ -594,14 +536,6 @@ Resources:
               owner: root
               group: root
               authentication: S3AccessCreds
-          services:
-            sysvinit:
-              cfn-hup:
-                enabled: 'true'
-                ensureRunning: 'true'
-                files:
-                - /etc/cfn/cfn-hup.conf
-                - /etc/cfn/hooks.d/cfn-auto-reloader.conf
     Properties:
       BlockDeviceMappings:
       - DeviceName: '/dev/xvda'
@@ -677,21 +611,6 @@ Resources:
               yum-utils: []
               sudo: []
           files:
-            /etc/cfn/cfn-hup.conf:
-              content: !Sub |
-                [main]
-                stack=${AWS::StackId}
-                region=${AWS::Region}
-              mode: '000400'
-              owner: root
-              group: root
-            /etc/cfn/hooks.d/cfn-auto-reloader.conf:
-              content: !Sub |
-                [cfn-auto-reloader-hook]
-                triggers=post.update
-                path=Resources.LaunchConfig.Metadata.AWS::CloudFormation::Init
-                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchConfig --region ${AWS::Region}
-                runas=root
             /tmp/shinesolutions/install_aem_opencloud.sh:
               source:
                 !Sub
@@ -722,14 +641,6 @@ Resources:
               owner: root
               group: root
               authentication: S3AccessCreds
-          services:
-            sysvinit:
-              cfn-hup:
-                enabled: 'true'
-                ensureRunning: 'true'
-                files:
-                - /etc/cfn/cfn-hup.conf
-                - /etc/cfn/hooks.d/cfn-auto-reloader.conf
     Properties:
       BlockDeviceMappings:
       - DeviceName: '/dev/xvda'
@@ -790,6 +701,11 @@ Resources:
         Value: AEM OpenCloud
   AMIInfoFunctionExecutionRole:
     Type: AWS::IAM::Role
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+        - id: W11
+          reason: "Skip IAM Resource permission check for IAM Role"
     Properties:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -808,19 +724,38 @@ Resources:
           Statement:
           - Effect: Allow
             Action:
-            - ec2:Describe*
+            - ec2:DescribeImages
+            - ec2:DescribeInstances
+            Resource: '*'
+          - Effect: Allow
+            Action:
             - ec2:StopInstances
+            Resource: !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/*"
+          - Action:
+            - ec2:CreateSnapshot
+            Effect: Allow
+            Resource: !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}::snapshot/*"
+          - Effect: Allow
+            Action:
             - ec2:CreateImage
             - ec2:DeregisterImage
-            Resource: '*'
+            Resource:
+              - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}::image/*"
+              - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/*"
       ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
   AMIInfoFunction:
     Type: AWS::Lambda::Function
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+        - id: W58
+          reason: "Skip IAM permission check forLambda functions require permission to write CloudWatch Logs"
     Properties:
       Handler: index.lambda_handler
       Runtime: python3.7
       Timeout: 900
+      ReservedConcurrentExecutions: 10
       Role: !GetAtt AMIInfoFunctionExecutionRole.Arn
       Code:
         ZipFile: |
@@ -846,6 +781,11 @@ Resources:
               cfnresponse.send(event, context, cfnresponse.FAILED, {})
   AMICleanUpFunction:
     Type: AWS::Lambda::Function
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+        - id: W58
+          reason: "Skip IAM permission check forLambda functions require permission to write CloudWatch Logs"
     Properties:
       Handler: index.lambda_handler
       Runtime: python3.7

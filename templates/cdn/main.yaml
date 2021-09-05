@@ -38,7 +38,7 @@ Parameters:
     Default: 86400
   DefaultCacheBehaviorForwardedValuesCookiesForwardParameter:
     Description: >-
-      Specifies which cookies to forward to the origin for this cache behavior: all, none, or the list of cookies specified in the WhitelistedNames complex type.
+      Specifies which cookies to forward to the origin for this cache behavior: all, none, or the list of specified cookies.
     Type: String
     AllowedValues:
       - all
@@ -47,12 +47,12 @@ Parameters:
     Default: 'all'
   DefaultCacheBehaviorForwardedValuesCookiesWhitelistedNamesParameter:
     Description: >-
-      Required if you specify whitelist for the value of Forward:. A complex type that specifies how many different cookies you want CloudFront to forward to the origin for this cache behavior and, if you want to forward selected cookies, the names of those cookies.
+      Required if value of Forward is not all or none:. A complex type that specifies how many different cookies you want CloudFront to forward to the origin for this cache behavior and, if you want to forward selected cookies, the names of those cookies.
     Type: CommaDelimitedList
     Default: ''
   DefaultCacheBehaviorForwardedValuesHeadersParameter:
     Description: >-
-      A complex type that specifies the Headers, if any, that you want CloudFront to forward to the origin for this cache behavior (whitelisted headers). For the headers that you specify, CloudFront also caches separate versions of a specified object that is based on the header values in viewer requests.
+      A complex type that specifies the Headers, if any, that you want CloudFront to forward to the origin for this cache behavior. For the headers that you specify, CloudFront also caches separate versions of a specified object that is based on the header values in viewer requests.
     Type: CommaDelimitedList
     Default: ''
   DefaultCacheBehaviorForwardedValuesQueryStringParameter:

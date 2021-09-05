@@ -48,6 +48,11 @@ Parameters:
     Type: String
 Resources:
   AEMASGEventQueuePolicy:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+        - id: F21
+          reason: "SQS Queue Policy * principal described in https://aws.amazon.com/premiumsupport/knowledge-center/sqs-sns-subscribe-cloudformation/"
     Properties:
       PolicyDocument:
         Statement:
