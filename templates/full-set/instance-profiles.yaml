@@ -277,8 +277,8 @@ Resources:
         Statement:
         - Action:
           - autoscaling:DescribeAutoScalingGroups
-          - elasticloadbalancing:DescribeLoadBalancers
           - ec2:describeInstanceAttribute
+          - elasticloadbalancing:DescribeLoadBalancers
           - elasticloadbalancing:DescribeTags
           - elasticloadbalancing:DescribeTargetGroups
           - elasticloadbalancing:DescribeTargetHealth

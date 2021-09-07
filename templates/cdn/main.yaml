@@ -45,11 +45,6 @@ Parameters:
       - none
       - whitelist
     Default: 'all'
-  DefaultCacheBehaviorForwardedValuesCookiesWhitelistedNamesParameter:
-    Description: >-
-      Required if value of Forward is not all or none:. A complex type that specifies how many different cookies you want CloudFront to forward to the origin for this cache behavior and, if you want to forward selected cookies, the names of those cookies.
-    Type: CommaDelimitedList
-    Default: ''
   DefaultCacheBehaviorForwardedValuesHeadersParameter:
     Description: >-
       A complex type that specifies the Headers, if any, that you want CloudFront to forward to the origin for this cache behavior. For the headers that you specify, CloudFront also caches separate versions of a specified object that is based on the header values in viewer requests.
@@ -130,8 +125,6 @@ Conditions:
         - 'overwrite-me'
   Custom404Enabled:
     !Not [!Or [!Equals [!Ref CustomErrorResponses404PagePathParameter, ''], !Equals [!Ref CustomErrorResponses404PagePathParameter, 'overwrite-me']]]
-  DefaultCacheBehaviorForwardedValuesCookiesWhitelistedNamesEnabled:
-    !Equals [!Ref DefaultCacheBehaviorForwardedValuesCookiesForwardParameter, 'whitelist']
   DefaultCacheBehaviorForwardedValuesHeadersParameterEnabled:
     !Not [!Or [!Equals [!Select [0, !Ref DefaultCacheBehaviorForwardedValuesHeadersParameter], ''], !Equals [!Select [0, !Ref DefaultCacheBehaviorForwardedValuesHeadersParameter], 'overwrite-me']]]
   DefaultCacheBehaviorForwardedValuesQueryStringCacheKeysEnabled:
@@ -178,7 +171,6 @@ Resources:
             Cookies:
               Forward:
                 Ref: DefaultCacheBehaviorForwardedValuesCookiesForwardParameter
-              WhitelistedNames: !If [DefaultCacheBehaviorForwardedValuesCookiesWhitelistedNamesEnabled, !Ref DefaultCacheBehaviorForwardedValuesCookiesWhitelistedNamesParameter, !Ref 'AWS::NoValue']
             Headers: !If [DefaultCacheBehaviorForwardedValuesHeadersParameterEnabled, !Ref DefaultCacheBehaviorForwardedValuesHeadersParameter, !Ref 'AWS::NoValue']
             QueryString:
               Ref: DefaultCacheBehaviorForwardedValuesQueryStringParameter
